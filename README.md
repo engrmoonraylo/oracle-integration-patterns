@@ -1,2 +1,46 @@
-# oracle-integration-patterns
-Oracle Integration Cloud Repository by Moon Ray Lo
+\# Oracle Integration Patterns
+
+
+
+Hands-on build walkthroughs and reusable patterns for Oracle Integration 3 (OIC),
+
+based on real integration work. Each document shows a complete build from
+
+design to end-to-end testing, with screenshots, mappings and runtime results.
+
+
+
+\*\*Author:\*\* Moon Ray Lo, Oracle ACE Apprentice  
+
+\*\*Product:\*\* Oracle Integration 3  
+
+\*\*Connect:\*\* \[LinkedIn](https://www.linkedin.com/in/moonraylo) ·
+
+\[Oracle ACE Directory](https://ace.oracle.com/ords/ace/oapt/profile/moonraylo) ·
+
+\[Real-World Oracle Integration newsletter](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+
+
+
+\---
+
+
+
+\## Contents
+
+
+
+| # | Pattern | What it covers | Document | Date |
+
+|---|---------|----------------|----------|------|
+
+| 01 | Schedule integration invoking an app-driven integration | REST trigger connection, app-driven integration with GET and POST operations, scheduled integration calling it through the Local Integration adapter, mappings from runtime metadata, activation and end-to-end testing | \[Download PDF](docs/OICProductUsage01\_MoonRayLo\_BuildSchedIntegrationAndInvokeAppDrivenIntegration.pdf?raw=true) | Oct 24, 2026 |
+
+
+
+\---
+
+
+
+\## Repository structure
+
