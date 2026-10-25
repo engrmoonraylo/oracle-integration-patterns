@@ -44,3 +44,55 @@ design to end-to-end testing, with screenshots, mappings and runtime results.
 
 \## Repository structure
 
+
+
+oracle-integration-patterns/
+
+├── docs/ Build walkthroughs (PDF)
+
+└── README.md
+
+
+
+\---
+
+
+
+\## About these documents
+
+
+
+\- Built in a non-client Oracle Integration development environment.
+
+\- Instance host names and user identifiers are masked in all screenshots.
+
+\- Hardcoded values in the demos are for illustration; the patterns are meant
+
+&#x20; to be adapted to your own integrations.
+
+\- The PDF links download the file directly, since GitHub's in-browser
+
+&#x20; preview may not render them.
+
+
+
+\---
+
+
+
+\## Feedback
+
+
+
+Questions or suggestions are welcome. Open an issue in this repository or
+
+connect with me on LinkedIn.
+
+
+
+\---
+
+
+
+\*Views and content are my own and do not represent my employer or Oracle.\*
+
