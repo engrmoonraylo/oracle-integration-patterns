@@ -10,9 +10,9 @@ design to end-to-end testing, with screenshots, mappings and runtime results.
 
 
 
-\*\*Author:\*\* Moon Ray Lo, Oracle ACE Apprentice  
+\*\*Author:\*\* Moon Ray Lo, Oracle ACE Apprentice
 
-\*\*Product:\*\* Oracle Integration 3  
+\*\*Product:\*\* Oracle Integration 3
 
 \*\*Connect:\*\* \[LinkedIn](https://www.linkedin.com/in/moonraylo) ·
 
@@ -35,6 +35,8 @@ design to end-to-end testing, with screenshots, mappings and runtime results.
 |---|---------|----------------|----------|------|
 
 | 01 | Schedule integration invoking an app-driven integration | REST trigger connection, app-driven integration with GET and POST operations, scheduled integration calling it through the Local Integration adapter, mappings from runtime metadata, activation and end-to-end testing | \[Download PDF](docs/OICProductUsage01\_MoonRayLo\_BuildSchedIntegrationAndInvokeAppDrivenIntegration.pdf?raw=true) | Oct 24, 2026 |
+
+| 02 | JWT signing key with OCI Cloud Shell and OCI Vault | RSA key pair and certificate in Cloud Shell, private key stored and verified as an OCI Vault secret, signing key uploaded to Oracle Integration for OAuth JWT User Assertion | \[Download PDF](docs/OICProductUsage02\_MoonRayLo\_JWTSigningKeyCloudShellAndVaultForOIC.pdf?raw=true) | Oct 29, 2026 |
 
 
 
