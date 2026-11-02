@@ -38,6 +38,8 @@ design to end-to-end testing, with screenshots, mappings and runtime results.
 
 | 02 | JWT signing key with OCI Cloud Shell and OCI Vault | RSA key pair and certificate in Cloud Shell, private key stored and verified as an OCI Vault secret, signing key uploaded to Oracle Integration for OAuth JWT User Assertion | \[Download PDF](docs/OICProductUsage02\_MoonRayLo\_JWTSigningKeyCloudShellAndVaultForOIC.pdf?raw=true) | Oct 29, 2026 |
 
+| 03 | Fusion identity domain trust and JWT token test | Signing certificate imported as a trusted partner certificate, confidential application for JWT User Assertion with the Fusion scope, token and Fusion REST call proven from Cloud Shell | \[Download PDF](docs/OICProductUsage03\_MoonRayLo\_FusionIdentityDomainJWTTokenTest.pdf?raw=true) | Oct 29, 2026 |
+
 
 
 \---
