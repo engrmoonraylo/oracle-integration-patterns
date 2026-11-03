@@ -40,6 +40,8 @@ design to end-to-end testing, with screenshots, mappings and runtime results.
 
 | 03 | Fusion identity domain trust and JWT token test | Signing certificate imported as a trusted partner certificate, confidential application for JWT User Assertion with the Fusion scope, token and Fusion REST call proven from Cloud Shell | \[Download PDF](docs/OICProductUsage03\_MoonRayLo\_FusionIdentityDomainJWTTokenTest.pdf) | Oct 29, 2026 |
 
+| 04 | Fusion connections on OAuth JWT User Assertion | REST, SOAP, BI Publisher, ERP Cloud and HCM Cloud adapter connections moved from password authentication to JWT User Assertion, BI Publisher proven with a run, ERP and HCM adapter Save-before-Test behavior | \[Download PDF](docs/OICProductUsage04\_MoonRayLo\_OICFusionConnectionsJWTUserAssertion.pdf) | Oct 29, 2026 |
+
 
 
 \---
