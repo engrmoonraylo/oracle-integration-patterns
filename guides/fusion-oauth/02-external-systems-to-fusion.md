@@ -247,6 +247,12 @@ Use Authorization Code only when the system can't create or protect a signing ke
 
 ---
 
+Written for the **Real-World Oracle Integration** newsletter on LinkedIn. [Subscribe on LinkedIn](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition.
+
+[![Real-World Oracle Integration newsletter on LinkedIn](images/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+
+---
+
 [← Guide 1: OIC connections to Fusion](01-oic-connections-to-fusion.md) · [Back to the overview](README.md)
 
 *Moon Ray Lo, Oracle ACE Apprentice. The postings on this site are my own and do not represent Huron's positions, strategies or opinions. Confirm each step against Oracle's current documentation for your release.*

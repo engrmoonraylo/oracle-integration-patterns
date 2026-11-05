@@ -461,6 +461,12 @@ If a connection starts failing with 401 after weeks of working, the refresh toke
 
 ---
 
+Written for the **Real-World Oracle Integration** newsletter on LinkedIn. [Subscribe on LinkedIn](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition.
+
+[![Real-World Oracle Integration newsletter on LinkedIn](images/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+
+---
+
 [← Back to the overview](README.md) · [Guide 2: External systems to Fusion →](02-external-systems-to-fusion.md)
 
 *Moon Ray Lo, Oracle ACE Apprentice. The postings on this site are my own and do not represent Huron's positions, strategies or opinions. Confirm each step against Oracle's current documentation for your release.*

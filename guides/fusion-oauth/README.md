@@ -6,6 +6,8 @@ Oracle is retiring password-based authentication for Oracle Fusion Cloud Applica
 
 This guide is the step-by-step companion to my Real-World Oracle Integration newsletter, Edition #4. It is written from setting this up end to end on Oracle Integration 3 and Oracle Fusion in October 2026, and checked against Oracle's documentation as of November 2026.
 
+[![Real-World Oracle Integration newsletter on LinkedIn](images/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+
 ![OAuth flow for Fusion callers](images/fusion-oauth-flow.png)
 
 ## Which guide do I need?
@@ -101,5 +103,9 @@ Oracle also documents a BI administrator property, **Enable OAuth for SOAP Webse
 | 1.0 | November 2026 | First public version: OIC connections and external systems, BI Publisher on a 26C pod, screenshots. |
 
 ---
+
+This guide is written for the **Real-World Oracle Integration** newsletter on LinkedIn: production-tested Oracle Integration patterns, one edition at a time. [Subscribe on LinkedIn](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) to get the next one.
+
+[![Real-World Oracle Integration newsletter on LinkedIn](images/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
 
 *Moon Ray Lo, Oracle ACE Apprentice. The postings on this site are my own and do not represent Huron's positions, strategies or opinions. Oracle features and behavior change between releases: confirm each step against Oracle's current documentation for your version, and test in non-production first.*
