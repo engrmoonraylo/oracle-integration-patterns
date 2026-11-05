@@ -1,0 +1,22 @@
+# Never commit keys, certificates with private keys, secrets or tokens
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*_private_key*
+*.env
+.env*
+secrets/
+tokens/
+*token*.json
+
+# Postman environments often hold client secrets and tokens
+*.postman_environment.json
+
+# Local and OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+*.tmp

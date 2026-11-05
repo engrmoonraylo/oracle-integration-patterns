@@ -46,6 +46,7 @@ oracle-integration-patterns/
 ├── docs/                 Build walkthroughs (PDF)
 ├── guides/
 │   └── fusion-oauth/     Oracle Fusion OAuth setup guide (Markdown, images, scripts)
+├── .gitignore            Keeps keys, secrets and tokens out of the repository
 └── README.md
 ```
 
@@ -61,6 +62,16 @@ oracle-integration-patterns/
 to be adapted to your own integrations.
 * Oracle features change between releases: confirm each step against Oracle's
 current documentation and test in non-production first.
+
+---
+
+## Using these materials
+
+* The walkthroughs and guides are for learning and reference. Adapt names, scopes,
+roles and security settings to your own standards before using them in any environment.
+* Never commit private keys, client secrets, tokens or Postman environments that hold
+them. The `.gitignore` in this repository blocks the common file types.
+* Scripts are provided as-is, without warranty. Review them before running.
 
 ---
 
