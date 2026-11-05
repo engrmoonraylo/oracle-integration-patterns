@@ -117,7 +117,7 @@ Work in the Fusion environment's identity domain, with the console region set to
 
 ### 4.3 BI Publisher callers
 
-If the system calls BI Publisher SOAP services (for example `ExternalReportWSSService` `runReport`), a BI administrator must set **Enable OAuth for SOAP Webservices** to **True** under **BI Publisher Administration > Runtime Configuration > Properties > All Outputs**. Oracle's Analytics Publisher Developer's Guide documents this setting alongside JWT User Assertion support for the BI Publisher SOAP services.
+If the system calls BI Publisher SOAP services (for example `ExternalReportWSSService` `runReport`), check **BI Publisher Administration > Runtime Configuration > Properties > All Outputs**. If **Enable OAuth for SOAP Webservices** is listed, a BI administrator sets it to **True**, as Oracle's Analytics Publisher Developer's Guide documents. If it isn't listed, no change is needed: on a 26C pod the property wasn't there, and a direct `runReport` call with the Bearer token returned report data (Step 6). See [Guide 1, Step 7](01-oic-connections-to-fusion.md#step-7-check-the-bi-publisher-oauth-property).
 
 ## Step 5: Build the token request in the system
 
@@ -241,7 +241,7 @@ Use Authorization Code only when the system can't create or protect a signing ke
 | `invalid_scope` | The two scope parts split by a space, or the wrong pod | Copy the scope from the token issuance policy |
 | 401 from Fusion with a valid token | Token expired, or host doesn't match the scope's pod | Request a new token; match host and pod |
 | 403 from Fusion | Integration user lacks the role or data access | Grant the minimum role and data security |
-| BI Publisher SOAP rejects the Bearer token | OAuth for SOAP web services not enabled | Set **Enable OAuth for SOAP Webservices** to True (4.3) |
+| BI Publisher SOAP rejects the Bearer token | Property listed but not set to True, or the user lacks access to the report | Set **Enable OAuth for SOAP Webservices** to True if it is listed (4.3); check the user's access to the report path |
 | Authorization Code works for weeks, then 401 | Refresh token expired or revoked | Give consent again as the integration user; confirm `offline_access` in the scope |
 | App or certificate change not visible | Made in a replica region | Switch to the home region and retry |
 

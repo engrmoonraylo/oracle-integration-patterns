@@ -17,7 +17,7 @@ This guide moves every Oracle Integration 3 (OIC) connection that calls Oracle F
 - [Step 4: Upload the private key to OIC](#step-4-upload-the-private-key-to-oic)
 - [Step 5: Trust the certificate and create the confidential application](#step-5-trust-the-certificate-and-create-the-confidential-application)
 - [Step 6: Prove the token before touching OIC](#step-6-prove-the-token-before-touching-oic)
-- [Step 7: Enable OAuth for BI Publisher SOAP web services](#step-7-enable-oauth-for-bi-publisher-soap-web-services)
+- [Step 7: Check the BI Publisher OAuth property](#step-7-check-the-bi-publisher-oauth-property)
 - [Step 8: Reconfigure the OIC connections](#step-8-reconfigure-the-oic-connections)
 - [Step 9: Validate, promote and maintain](#step-9-validate-promote-and-maintain)
 - [Alternative: Authorization Code](#alternative-authorization-code)
@@ -47,7 +47,7 @@ What changes for you:
 | 4 | Upload the private key to OIC | OIC > Settings > Certificates | Signing key with the alias |
 | 5 | Trust the certificate, create the app | Fusion identity domain, home region | Client ID |
 | 6 | Prove the token outside OIC | Cloud Shell token script | Token 200, Fusion GET 200 |
-| 7 | Enable OAuth for BI Publisher SOAP | BI Publisher Administration | Property set to True |
+| 7 | Check the BI Publisher OAuth property | BI Publisher Administration | Property True, or not listed on your release |
 | 8 | Switch the connections one at a time | OIC Connections | All on JWT User Assertion, Configured |
 | 9 | Validate, promote, maintain | OIC runs, next environment | Runtime proof, renewal owner |
 
@@ -110,8 +110,6 @@ Keep one row per pairing with the environment's setup record. It's your checklis
 No roles are added for OAuth. The user keeps the access its integrations need today.
 
 ![Integration user in the Fusion Security Console](images/oic/03-integration-user.png)
-
-![Integration user roles](images/oic/04-integration-user-roles.png)
 
 ## Step 2: Create the signing key pair
 
@@ -304,18 +302,19 @@ python3 token_test.py
 - If you've already deleted the working copy of the key, read it from the vault into a temporary file with `umask 077`, run the script, then `shred -u` the file.
 - The access token's lifetime follows the `exp` in the user assertion (300 seconds in the script). OIC recalculates `exp` on every token request, so connections aren't affected.
 
-## Step 7: Enable OAuth for BI Publisher SOAP web services
+## Step 7: Check the BI Publisher OAuth property
 
-Oracle's Analytics Publisher Developer's Guide documents that a BI administrator must enable OAuth for the BI Publisher SOAP web services. Check this before you switch any BI Publisher connection.
+Oracle's Analytics Publisher Developer's Guide (October 2026) documents a BI administrator property, **Enable OAuth for SOAP Webservices**, alongside JWT User Assertion support for the BI Publisher SOAP web services. Whether you see it depends on your Fusion release, so check before you switch any BI Publisher connection.
 
 1. Sign in to Fusion as a BI administrator and open the BI Publisher **Administration** page: from the analytics catalog (`https://<fusion-host>/analytics`), select **Administration > Manage Publisher**, or go straight to `https://<fusion-host>/xmlpserver/servlet/admin`.
 2. Under **Runtime Configuration**, select **Properties**.
-3. Under **All Outputs**, set **Enable OAuth for SOAP Webservices** to **True**.
-4. Select **Apply**.
+3. Scroll to **All Outputs**.
+   - **If Enable OAuth for SOAP Webservices is listed**, set it to **True** and select **Apply**, as Oracle documents. Record who changed it and when, and repeat in every environment along the promotion path.
+   - **If it isn't listed**, leave the page as it is. On a 26C pod (11.13.26.07.0) the property wasn't there, and BI Publisher still accepted the JWT User Assertion token: from the OIC SOAP adapter and from a direct SOAP call (Guide 2, Step 6).
 
-![Enable OAuth for SOAP Webservices in BI Publisher](images/oic/17-bip-enable-oauth-property.png)
+![All Outputs on a 26C pod: no Enable OAuth for SOAP Webservices property](images/oic/17-bip-enable-oauth-property.png)
 
-Record who changed it and when. Every environment along the promotion path needs the same setting.
+*All Outputs on a 26C pod. The Enable OAuth for SOAP Webservices property isn't listed, and runReport still accepted the OAuth token.*
 
 ## Step 8: Reconfigure the OIC connections
 
@@ -455,7 +454,7 @@ If a connection starts failing with 401 after weeks of working, the refresh toke
 | New app or certificate seems missing | Created or viewed in a replica region | Switch to the home region and retry after a few minutes |
 | 401 from Fusion with a valid token | Token from another domain (for example DEV1's domain calling the DEV2 host), or the user doesn't exist there | Match the domain to the Fusion host; confirm the user in that environment |
 | 403 from Fusion | Integration user lacks the role | Add the role and retest |
-| BI Publisher call rejected under OAuth | OAuth property not enabled, or report or data access missing | Check Step 7, then the user's access to the report path |
+| BI Publisher call rejected under OAuth | OAuth property listed but not set to True, or report or data access missing | Check Step 7, then the user's access to the report path |
 | ERP/HCM adapter: `CASDK-0005 ... text is null` at Test | Tested before saving | Save, Test, Save again (8.2) |
 | Authorization Code: consent works, Test returns 401 | Consent given by an account not in Fusion | Give consent again as the integration user |
 | Events stop after the switch | Subscription created under the old security | Reactivate the subscribed integration in non-production first |

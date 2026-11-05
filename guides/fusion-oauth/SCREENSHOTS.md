@@ -20,7 +20,6 @@ Mask with a solid block, not blur. Keep the clicked or selected element highligh
 | `images/oic/01-identity-domain-home-region.png` | Overview | Fusion identity domain Details page with the Home region |
 | `images/oic/02-fusion-scope.png` | 0.1 | Oracle Applications Cloud (Fusion) service, OAuth configuration, primary audience and scope |
 | `images/oic/03-integration-user.png` | 1 | Integration user in the Fusion Security Console |
-| `images/oic/04-integration-user-roles.png` | 1 | The user's roles, unchanged |
 | `images/oic/05-cloudshell-keypair.png` | 2.1 | Cloud Shell: key pair created and the verification output, including "Key and certificate match" |
 | `images/oic/06-cloudshell-download.png` | 2.1 | Cloud Shell Menu > Download with the relative file path |
 | `images/oic/07-vault.png` | 3.1 | Vault created in its compartment |
@@ -33,7 +32,7 @@ Mask with a solid block, not blur. Keep the clicked or selected element highligh
 | `images/oic/14-trusted-partner-certificate.png` | 5.1 | Trusted partner certificate imported with the alias |
 | `images/oic/15-confidential-app.png` | 5.2 | Confidential app OAuth configuration: JWT assertion, Trusted, certificate alias, Fusion resource |
 | `images/oic/16-token-test.png` | 6 | Token test output: Token request 200, sub, Fusion GET 200 |
-| `images/oic/17-bip-enable-oauth-property.png` | 7 | BI Publisher Runtime Configuration: Enable OAuth for SOAP Webservices = True |
+| `images/oic/17-bip-enable-oauth-property.png` | 7 | BI Publisher Runtime Configuration, All Outputs, on a 26C pod (property not listed) |
 | `images/oic/18-erp-adapter-jwt.png` | 8.2 | ERP Cloud adapter connection on OAuth using JWT User Assertion, Configured |
 | `images/oic/19-bip-soap-connection.png` | 8.4 | SOAP adapter connection to ExternalReportWSSService on OAuth using JWT User Assertion |
 | `images/oic/20-bip-runreport-response.png` | 8.4 | runReport response with reportBytes returned |

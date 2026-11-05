@@ -61,9 +61,9 @@ Most of the problems I hit came from doing the right step in the wrong place. Es
 
 ## BI Publisher: what's changed
 
-Many teams are still reading an older Oracle Support note that says JWT isn't supported for BI web services. Oracle's Analytics Publisher Developer's Guide (October 2026) now states that the BI Publisher SOAP web services in Fusion support OAuth access tokens obtained through the JWT User Assertion grant, sent as `Authorization: Bearer <token>`. In my own testing in October 2026, an OIC SOAP adapter connection to `ExternalReportWSSService` switched to **OAuth using JWT User Assertion** ran `runReport` and returned real report data.
+Many teams are still reading an older Oracle Support note that says JWT isn't supported for BI web services. Oracle's Analytics Publisher Developer's Guide (October 2026) now states that the BI Publisher SOAP web services in Fusion support OAuth access tokens obtained through the JWT User Assertion grant, sent as `Authorization: Bearer <token>`. In my own testing on a 26C pod, `ExternalReportWSSService` `runReport` returned report data with a JWT User Assertion token twice: from an OIC SOAP adapter connection on **OAuth using JWT User Assertion**, and from a direct SOAP call with only `Authorization: Bearer <token>` and no WS-Security header.
 
-Oracle also documents a BI administrator setting for this: **BI Publisher Administration > Runtime Configuration > Properties > All Outputs > Enable OAuth for SOAP Webservices = True**. Check it before you test BI Publisher. Both guides include it.
+Oracle also documents a BI administrator property, **Enable OAuth for SOAP Webservices** (BI Publisher Administration > Runtime Configuration > Properties > All Outputs). Check for it: if it's listed, set it to True. On the 26C pod I tested it wasn't listed, and both calls worked without it. Both guides cover this.
 
 ## Before you start: checklist
 
@@ -98,7 +98,7 @@ Oracle also documents a BI administrator setting for this: **BI Publisher Admini
 
 | Version | Date | Change |
 |---|---|---|
-| 1.0 | November 2026 | First public version: OIC connections and external systems, BI Publisher OAuth property, screenshots. |
+| 1.0 | November 2026 | First public version: OIC connections and external systems, BI Publisher on a 26C pod, screenshots. |
 
 ---
 
