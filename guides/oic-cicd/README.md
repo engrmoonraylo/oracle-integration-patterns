@@ -2,6 +2,8 @@
 
 ![Oracle Integration CI/CD: integration-level Git for OIC 3 projects](images/oic-cicd-banner.png)
 
+> **Companion to Edition #5 of the [Real-World Oracle Integration](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) newsletter on LinkedIn.** [Subscribe](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition, or [connect with me](https://www.linkedin.com/in/moonraylo).
+
 Oracle Integration 3 can push a project or a project deployment to GitHub in one click, but each lands as a single `.car` archive. Git can tell you the file changed. It can't tell you which integration changed, who changed it, or whether production received exactly that change.
 
 This guide adds those three things with two small Python scripts and three GitHub Actions workflows:
@@ -12,7 +14,7 @@ This guide adds those three things with two small Python scripts and three GitHu
 
 Production always receives the untouched `.car` file that OIC exported. Git adds a readable mirror and two checks around the import. Nothing is ever rebuilt from Git.
 
-**Tested on:** Oracle Integration 3 (26.10), two instances and a private GitHub repository, November 2026.
+**Tested on:** Oracle Integration 3 (26.10), two instances and a private GitHub repository, November 2026. Every behavior below has screenshots from that test: open the **Screenshots** sections. Instance names, other projects, user names and tokens are masked.
 **Requirements:** Python 3 (standard library only), a GitHub repository with Actions enabled.
 
 ---
@@ -63,6 +65,74 @@ Two more details: a deployment identifier can be imported into an instance only 
 
 I expect connections to behave like lookups (existing connections keep their target configuration), but I didn't test that in this proof of concept.
 
+### Evidence from the proof of concept
+
+Instance A plays DEV and instance B plays PROD. The test project is `XXMRL_DEMO_OIC_PRJ` with two scheduled integrations (INT1, INT2) and two lookups.
+
+<details>
+<summary><b>Behavior 1: a full project archive is rejected where the project exists</b> (5 screenshots)</summary>
+
+<br>
+
+The archive carried deployment `HOTFIX_INT1_101`, which already existed in the target:
+
+![Import rejected: matching deployment already present](images/poc/10-import-rejected-deployment-exists.png)
+
+Rejected again with an archive that carried no deployment: the project already exists.
+
+![Import rejected: project already exists](images/poc/11-import-rejected-project-exists.png)
+
+The same archive imports into an instance without the project (the first install), and every integration lands as Configured:
+
+![First install: import into instance B](images/poc/12-first-install-import.png)
+![First install: Imported project](images/poc/13-first-install-imported.png)
+![First install: everything Configured](images/poc/14-first-install-configured.png)
+
+</details>
+
+<details>
+<summary><b>Behaviors 2 to 4: release REL_R1 into an existing project</b> (9 screenshots)</summary>
+
+<br>
+
+**Before the release.** Production holds a PROD-only lookup value, `Value1-PROD`:
+
+![PROD-only lookup value](images/poc/15-prod-only-lookup-value.png)
+
+In DEV, INT1 1.0.1 is edited **in place** (the incorrect change) and the existing lookup gets a new row:
+
+![DEV: INT1 1.0.1 edited in place](images/poc/16-dev-same-version-edit.png)
+![DEV: new lookup row ID5](images/poc/17-dev-lookup-new-row.png)
+
+Deployment REL_R1 holds INT1 1.0.1 (same version, changed) and INT2 1.0.1 (new):
+
+![Deployment REL_R1](images/poc/18-rel-r1-deployment.png)
+
+**The import.** OIC reports success:
+
+![Importing REL_R1 into the existing project](images/poc/19-import-rel-r1.png)
+![Imported project](images/poc/20-rel-r1-imported-success.png)
+
+**After the release.** INT2 1.0.1 and the new lookup arrived, Configured. INT1 1.0.1 kept its old content (the post-import check proves it, see the [release guard summary](#how-the-pipeline-works)). The existing lookup kept `Value1-PROD`, and DEV's new row was not added:
+
+![After REL_R1](images/poc/21-after-rel-r1.png)
+![Existing lookup kept its PROD value](images/poc/22-lookup-kept-prod-value.png)
+
+A production run of INT2 1.0.1 logs `Value1-PROD | NewValue1`: the PROD value was kept and the missing lookup was created.
+
+![PROD run log](images/poc/23-prod-run-log.png)
+
+</details>
+
+<details>
+<summary><b>Activation: a new minor version deactivates the previous one</b> (1 screenshot)</summary>
+
+<br>
+
+![Activating 1.0.1 deactivated 1.0.0](images/poc/24-activation-deactivates-previous.png)
+
+</details>
+
 ## How the pipeline works
 
 ![The pipeline: release, expand, guard, import, verify, activate](images/03-pipeline.png)
@@ -85,6 +155,25 @@ The three workflows:
 | `verify-prod.yml` | Push to `main` that changes `prod-state/`, or manual run | Checks that every release archive on `main` landed in production as released |
 
 ![Release guard summary from the proof of concept](images/04-release-guard.png)
+
+<details>
+<summary><b>Screenshots: the workflows running on GitHub</b> (3 screenshots)</summary>
+
+<br>
+
+The `oic-dev` branch after a push: OIC's "API client checkin" commits, followed by the Expand workflow's commit naming the project:
+
+![Expand commit on oic-dev](images/poc/25-expand-commit.png)
+
+A pull request into `main` with the Release guard check passing:
+
+![Release guard check passing](images/poc/26-guard-check-passing.png)
+
+Verify PROD after the production baseline is merged (no release archives on `main` yet):
+
+![Verify PROD on the baseline](images/poc/27-verify-prod-baseline.png)
+
+</details>
 
 ## Try it with the demo exports
 
@@ -135,6 +224,35 @@ The second shows what happened when that release was imported anyway: OIC report
 5. **First install in production:** export the project from DEV with Project deployment left blank, import it into production (**Projects > Add > Import**), then export production the same way and commit it to `main` as `prod-state/<PROJECT>.car`. That file is what the guard compares every later release against.
 6. **On Windows clones,** run `git config core.longpaths true` once (expanded paths can pass 260 characters) and keep the clone in a local folder such as `C:\dev`, not a synced folder.
 
+<details>
+<summary><b>Screenshots: connecting OIC to GitHub</b> (7 screenshots)</summary>
+
+<br>
+
+The fine-grained token: one repository, Contents read and write:
+
+![GitHub fine-grained token](images/poc/02-github-fine-grained-token.png)
+
+Settings > Repository before and after the connection (token masked):
+
+![Settings > Repository, empty](images/poc/01-repository-settings-empty.png)
+![Repository connection established](images/poc/03-repository-connected.png)
+
+Export to Repository, and the push on GitHub:
+
+![Export to Repository succeeded](images/poc/04-export-to-repository.png)
+![Recent pushes from OIC on oic-dev](images/poc/05-repository-oic-dev-pushes.png)
+
+Without the Expand workflow, this is all Git sees: one binary archive.
+
+![The .car as a binary file in Git](images/poc/06-car-binary-in-git.png)
+
+When you export a project, the Project deployment field is optional. Blank means a full project archive (first install and production state); a deployment means a release archive.
+
+![Export project: Project deployment is optional](images/poc/09-export-project-deployment-optional.png)
+
+</details>
+
 Recommended, not tested in the proof of concept: protect `main` so a pull request needs an approval and a passing **Release guard** check before it merges; connect only the DEV instance to the repository; and keep client repositories in the client's own GitHub organization.
 
 ## Release runbook
@@ -151,6 +269,37 @@ Recommended, not tested in the proof of concept: protect `main` so a pull reques
 **Rollback:** deactivate the new integration version and reactivate the previous one. Roll back the faulty integration, not the whole deployment.
 
 **Ownership:** step 5 is manual and needs a named owner after go-live. Put it on the release checklist next to activation and the smoke test.
+
+<details>
+<summary><b>Worked example: release REL_R2, end to end</b> (9 screenshots)</summary>
+
+<br>
+
+**Step 1.** The fix done properly: INT1 1.0.2, a new version.
+
+![DEV: INT1 1.0.2](images/poc/28-dev-new-version-1-0-2.png)
+
+**Step 2.** Create the deployment, choose only the versions to release, and push it.
+
+![Create deployment](images/poc/07-create-deployment.png)
+![Choose integrations](images/poc/08-choose-integrations.png)
+![REL_R2 pushed to the repository](images/poc/29-rel-r2-pushed.png)
+
+**Step 3.** The release pull request, with the Release guard passing.
+
+![Release pull request for REL_R2](images/poc/30-rel-r2-pull-request.png)
+
+**Step 4.** Import into production: INT1 1.0.2 is added, Configured.
+
+![REL_R2 imported](images/poc/31-rel-r2-imported.png)
+![After REL_R2](images/poc/32-after-rel-r2.png)
+
+**Step 5.** Commit the production export, and Verify PROD confirms REL_R2 landed: the deployment is present and INT1 01.00.0002 content matches. The WARN reminds you it is not active yet (step 6).
+
+![Pull request with the production state](images/poc/33-prod-state-pull-request.png)
+![Verify PROD confirms REL_R2](images/poc/34-verify-prod-rel-r2.png)
+
+</details>
 
 ## Guard and verify findings
 
@@ -202,6 +351,12 @@ When `GITHUB_STEP_SUMMARY` is set, findings are also written to the job summary.
 
 ---
 
-This guide is written for the **Real-World Oracle Integration** newsletter on LinkedIn: production-tested Oracle Integration patterns, one edition at a time. [Subscribe on LinkedIn](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) to get the next one.
+## Follow the newsletter
+
+This guide is the hands-on companion to **Edition #5 of Real-World Oracle Integration**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
+
+[![Subscribe to the Real-World Oracle Integration newsletter on LinkedIn](../../assets/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+
+**[Subscribe to the newsletter](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)** · **[Connect on LinkedIn](https://www.linkedin.com/in/moonraylo)** · **[Oracle ACE profile](https://ace.oracle.com/ords/ace/oapt/profile/moonraylo)**
 
 *Moon Ray Lo, Oracle ACE Apprentice. The postings on this site are my own and do not represent Huron's positions, strategies or opinions. Oracle features and behavior change between releases: confirm each step against Oracle's current documentation for your version, and test in non-production first. Scripts are provided as-is, without warranty.*

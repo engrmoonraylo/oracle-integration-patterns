@@ -11,6 +11,10 @@ setup you can repeat in your own environments.
 [Oracle ACE Directory](https://ace.oracle.com/ords/ace/oapt/profile/moonraylo) ·
 [Real-World Oracle Integration newsletter](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
 
+Every guide here is the hands-on companion to an edition of my LinkedIn newsletter. Subscribe to get the next one.
+
+[![Subscribe to the Real-World Oracle Integration newsletter on LinkedIn](assets/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+
 ---
 
 ## Guides
@@ -44,6 +48,7 @@ Walkthroughs 02 to 04 show the build behind the Fusion OAuth guide in detail; wa
 
 ```
 oracle-integration-patterns/
+├── assets/               Shared images (newsletter banner)
 ├── docs/                 Build walkthroughs (PDF)
 ├── guides/
 │   ├── fusion-oauth/     Oracle Fusion OAuth setup guide (Markdown, images, scripts)

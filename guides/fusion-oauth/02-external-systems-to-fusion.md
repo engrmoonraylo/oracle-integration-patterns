@@ -247,9 +247,13 @@ Use Authorization Code only when the system can't create or protect a signing ke
 
 ---
 
-Written for the **Real-World Oracle Integration** newsletter on LinkedIn. [Subscribe on LinkedIn](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition.
+## Follow the newsletter
 
-[![Real-World Oracle Integration newsletter on LinkedIn](images/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+This guide is the hands-on companion to **Edition #4 of Real-World Oracle Integration**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
+
+[![Subscribe to the Real-World Oracle Integration newsletter on LinkedIn](../../assets/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+
+**[Subscribe to the newsletter](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)** · **[Connect on LinkedIn](https://www.linkedin.com/in/moonraylo)** · **[Oracle ACE profile](https://ace.oracle.com/ords/ace/oapt/profile/moonraylo)**
 
 ---
 

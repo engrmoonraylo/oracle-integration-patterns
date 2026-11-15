@@ -6,7 +6,7 @@ Oracle is retiring password-based authentication for Oracle Fusion Cloud Applica
 
 This guide is the step-by-step companion to my Real-World Oracle Integration newsletter, Edition #4. It is written from setting this up end to end on Oracle Integration 3 and Oracle Fusion in October 2026, and checked against Oracle's documentation as of November 2026.
 
-[![Real-World Oracle Integration newsletter on LinkedIn](images/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+> **Companion to Edition #4 of the [Real-World Oracle Integration](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) newsletter on LinkedIn.** [Subscribe](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition, or [connect with me](https://www.linkedin.com/in/moonraylo).
 
 ![OAuth flow for Fusion callers](images/fusion-oauth-flow.png)
 
@@ -104,8 +104,12 @@ Oracle also documents a BI administrator property, **Enable OAuth for SOAP Webse
 
 ---
 
-This guide is written for the **Real-World Oracle Integration** newsletter on LinkedIn: production-tested Oracle Integration patterns, one edition at a time. [Subscribe on LinkedIn](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) to get the next one.
+## Follow the newsletter
 
-[![Real-World Oracle Integration newsletter on LinkedIn](images/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+This guide is the hands-on companion to **Edition #4 of Real-World Oracle Integration**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
+
+[![Subscribe to the Real-World Oracle Integration newsletter on LinkedIn](../../assets/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
+
+**[Subscribe to the newsletter](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)** · **[Connect on LinkedIn](https://www.linkedin.com/in/moonraylo)** · **[Oracle ACE profile](https://ace.oracle.com/ords/ace/oapt/profile/moonraylo)**
 
 *Moon Ray Lo, Oracle ACE Apprentice. The postings on this site are my own and do not represent Huron's positions, strategies or opinions. Oracle features and behavior change between releases: confirm each step against Oracle's current documentation for your version, and test in non-production first.*
