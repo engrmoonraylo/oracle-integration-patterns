@@ -1,0 +1,33 @@
+# Post-import verification. After each release is imported, export the PROD
+# project (Project deployment left blank) and commit it as prod-state/<PROJECT>.car
+# on main. This checks that every imported release actually landed: OIC reports
+# success even when it silently skips an integration version that already existed.
+name: Verify PROD
+
+on:
+  push:
+    branches: [main]
+    paths: ["prod-state/**.car"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Verify imported releases
+        run: |
+          set -euo pipefail
+          if [ ! -d deployments ]; then
+            echo "No release archives on main yet." | tee -a "$GITHUB_STEP_SUMMARY"; exit 0
+          fi
+          status=0
+          for prod in prod-state/*.car; do
+            [ -f "$prod" ] || continue
+            python3 -I tools/oicci.py verify-all deployments --prod "$prod" || status=1
+          done
+          exit $status

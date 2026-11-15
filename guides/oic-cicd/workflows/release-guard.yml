@@ -1,0 +1,51 @@
+# Pre-import guard for release pull requests into main.
+# Blocks a release that OIC would reject or silently not apply:
+#   - full project archive instead of a deployment export
+#   - deployment identifier that already exists in PROD
+#   - integration version already in PROD with different content (silently skipped)
+# Warns about lookups and connections that will keep their PROD values.
+# PROD state is prod-state/<PROJECT>.car on the base branch (latest PROD export).
+name: Release guard
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Tool self-test
+        run: python3 -I -m unittest discover -s tests
+
+      - name: Check release archives
+        env:
+          BASE: origin/${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          git diff --name-only --diff-filter=AM "$BASE"...HEAD -- 'deployments/*.car' > /tmp/releases.txt
+          if [ ! -s /tmp/releases.txt ]; then
+            echo "No release archive (deployments/*.car) in this pull request." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ "$(wc -l < /tmp/releases.txt)" -gt 1 ]; then
+            echo "> ⚠️ More than one release archive in this pull request. Keep one release per pull request." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          status=0
+          while IFS= read -r car; do
+            project=$(python3 -I tools/oicci.py info "$car" --field project)
+            if git cat-file -e "${BASE}:prod-state/${project}.car" 2>/dev/null; then
+              git show "${BASE}:prod-state/${project}.car" > /tmp/prod.car
+              python3 -I tools/oicci.py check "$car" --prod /tmp/prod.car || status=1
+            else
+              python3 -I tools/oicci.py check "$car" || status=1
+            fi
+          done < /tmp/releases.txt
+          exit $status

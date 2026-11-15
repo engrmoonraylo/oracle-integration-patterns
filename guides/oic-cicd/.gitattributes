@@ -1,0 +1,2 @@
+# OIC project and deployment archives are zip files: never touch line endings or diff them as text.
+*.car binary

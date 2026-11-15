@@ -20,6 +20,7 @@ Step-by-step setup guides with commands, settings, screenshots and troubleshooti
 |Guide|What it covers|Link|Updated|
 |---|---|---|---|
 |Oracle Fusion OAuth Setup Guide: Moving Off Basic Authentication|Moving Oracle Integration connections (ERP, HCM, REST, SOAP, BI Publisher) and external systems that call Fusion REST and SOAP APIs from username and password to OAuth 2.0 JWT User Assertion, before Oracle's March 31, 2027 deadline|[Open guide](guides/fusion-oauth/README.md)|Nov 2026|
+|Oracle Integration CI/CD: Integration-Level Git for OIC 3 Projects|Per-integration Git history for OIC 3 projects pushed to GitHub, a release guard that blocks imports OIC would reject or silently skip, and a post-import check, with scripts, GitHub Actions workflows and demo exports|[Open guide](guides/oic-cicd/README.md)|Nov 2026|
 
 ---
 
@@ -45,7 +46,8 @@ Walkthroughs 02 to 04 show the build behind the Fusion OAuth guide in detail; wa
 oracle-integration-patterns/
 ├── docs/                 Build walkthroughs (PDF)
 ├── guides/
-│   └── fusion-oauth/     Oracle Fusion OAuth setup guide (Markdown, images, scripts)
+│   ├── fusion-oauth/     Oracle Fusion OAuth setup guide (Markdown, images, scripts)
+│   └── oic-cicd/         Oracle Integration CI/CD guide (Markdown, images, tools, workflows, tests)
 ├── .gitignore            Keeps keys, secrets and tokens out of the repository
 └── README.md
 ```

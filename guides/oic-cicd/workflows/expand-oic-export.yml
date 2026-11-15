@@ -1,0 +1,70 @@
+# Expand every .car that OIC pushes to oic-dev into a normalized, per-integration
+# review tree, and commit it with a message that says what changed and who changed it.
+# OIC's own push always reads "API client checkin" by OIC_Developer, so this commit
+# carries the real context.
+name: Expand OIC export
+
+on:
+  push:
+    branches: [oic-dev]
+    paths: ["projects/**.car", "deployments/**.car"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: expand-oic-dev
+  cancel-in-progress: false
+
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Expand changed archives
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            git diff --name-only --diff-filter=AM "$BEFORE" "$AFTER" -- 'projects/*.car' 'deployments/*.car' > /tmp/changed.txt
+          else
+            git ls-files 'projects/*.car' 'deployments/*.car' > /tmp/changed.txt
+          fi
+          : > /tmp/body.txt
+          names=""
+          while IFS= read -r car; do
+            [ -f "$car" ] || continue
+            kind=$(dirname "$car"); name=$(basename "$car" .car)
+            python3 -I tools/oicci.py expand "$car" "expanded/$kind/$name"
+            if git cat-file -e "${BEFORE}:${car}" 2>/dev/null; then
+              git show "${BEFORE}:${car}" > /tmp/previous.car
+              python3 -I tools/oicci.py summary "$car" --previous /tmp/previous.car >> /tmp/body.txt
+            else
+              python3 -I tools/oicci.py summary "$car" >> /tmp/body.txt
+            fi
+            names="$names $name"
+          done < /tmp/changed.txt
+          echo "NAMES=${names# }" >> "$GITHUB_ENV"
+          { echo '```'; cat /tmp/body.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit review tree
+        run: |
+          set -euo pipefail
+          git add expanded
+          if git diff --cached --quiet; then
+            echo "No review-tree change."; exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -F - <<EOF
+          Expand OIC export: ${NAMES}
+
+          $(cat /tmp/body.txt)
+          EOF
+          # OIC may push again while this runs: rebase once and retry.
+          git push || { git pull --rebase origin oic-dev && git push; }
