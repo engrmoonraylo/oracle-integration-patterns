@@ -249,7 +249,7 @@ Use Authorization Code only when the system can't create or protect a signing ke
 
 ## Follow the newsletter
 
-This guide is the hands-on companion to **Edition #4 of Real-World Oracle Integration**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
+This guide is the hands-on companion to **[Edition #4 of Real-World Oracle Integration](https://www.linkedin.com/pulse/oracle-fusion-oauth-integration-external-callers-setup-lo-psm-ii-aio2e/)**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
 
 [![Subscribe to the Real-World Oracle Integration newsletter on LinkedIn](../../assets/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
 

@@ -6,7 +6,7 @@ Oracle is retiring password-based authentication for Oracle Fusion Cloud Applica
 
 This guide is the step-by-step companion to my Real-World Oracle Integration newsletter, Edition #4. It is written from setting this up end to end on Oracle Integration 3 and Oracle Fusion in October 2026, and checked against Oracle's documentation as of November 2026.
 
-> **Companion to Edition #4 of the [Real-World Oracle Integration](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) newsletter on LinkedIn.** [Subscribe](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition, or [connect with me](https://www.linkedin.com/in/moonraylo).
+> **Companion to Edition #4 of the [Real-World Oracle Integration](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) newsletter on LinkedIn.** [Read the article](https://www.linkedin.com/pulse/oracle-fusion-oauth-integration-external-callers-setup-lo-psm-ii-aio2e/), [subscribe](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition, or [connect with me](https://www.linkedin.com/in/moonraylo).
 
 ![OAuth flow for Fusion callers](images/fusion-oauth-flow.png)
 
@@ -106,7 +106,7 @@ Oracle also documents a BI administrator property, **Enable OAuth for SOAP Webse
 
 ## Follow the newsletter
 
-This guide is the hands-on companion to **Edition #4 of Real-World Oracle Integration**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
+This guide is the hands-on companion to **[Edition #4 of Real-World Oracle Integration](https://www.linkedin.com/pulse/oracle-fusion-oauth-integration-external-callers-setup-lo-psm-ii-aio2e/)**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
 
 [![Subscribe to the Real-World Oracle Integration newsletter on LinkedIn](../../assets/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
 

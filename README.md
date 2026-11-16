@@ -23,7 +23,7 @@ Step-by-step setup guides with commands, settings, screenshots and troubleshooti
 
 |Guide|What it covers|Link|Updated|
 |---|---|---|---|
-|Oracle Fusion OAuth Setup Guide: Moving Off Basic Authentication|Moving Oracle Integration connections (ERP, HCM, REST, SOAP, BI Publisher) and external systems that call Fusion REST and SOAP APIs from username and password to OAuth 2.0 JWT User Assertion, before Oracle's March 31, 2027 deadline|[Open guide](guides/fusion-oauth/README.md)|Nov 2026|
+|Oracle Fusion OAuth Setup Guide: Moving Off Basic Authentication|Moving Oracle Integration connections (ERP, HCM, REST, SOAP, BI Publisher) and external systems that call Fusion REST and SOAP APIs from username and password to OAuth 2.0 JWT User Assertion, before Oracle's March 31, 2027 deadline|[Open guide](guides/fusion-oauth/README.md) · [Article](https://www.linkedin.com/pulse/oracle-fusion-oauth-integration-external-callers-setup-lo-psm-ii-aio2e/)|Nov 2026|
 |Oracle Integration CI/CD: Integration-Level Git for OIC 3 Projects|A production-ready blueprint, lab-proven on two OIC 3 instances: per-integration Git history for OIC 3 projects pushed to GitHub, a release guard that blocks imports OIC would reject or silently skip, and a post-import check, with scripts, GitHub Actions workflows and demo exports|[Open guide](guides/oic-cicd/README.md) · [Article](https://www.linkedin.com/pulse/oracle-integration-cicd-integration-level-git-oic-3-lo-psm-ii-4c20e/)|Nov 2026|
 
 ---
