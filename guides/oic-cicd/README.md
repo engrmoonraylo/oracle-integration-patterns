@@ -6,7 +6,7 @@
 
 Oracle Integration 3 can push a project or a project deployment to GitHub in one click, but each lands as a single `.car` archive. Git can tell you the file changed. It can't tell you which integration changed, who changed it, or whether production received exactly that change.
 
-This guide adds those three things with two small Python scripts and three GitHub Actions workflows:
+This guide is a **production-ready blueprint** that adds those three things with two small Python scripts and three GitHub Actions workflows, lab-proven on two Oracle Integration 3 instances:
 
 * **Per-integration history.** Every export OIC pushes is unzipped, cleaned of export noise and committed as one folder per integration version.
 * **A pre-import guard** on the release pull request, which blocks releases that OIC would reject or silently not apply.
@@ -14,7 +14,8 @@ This guide adds those three things with two small Python scripts and three GitHu
 
 Production always receives the untouched `.car` file that OIC exported. Git adds a readable mirror and two checks around the import. Nothing is ever rebuilt from Git.
 
-**Tested on:** Oracle Integration 3 (26.10), two instances and a private GitHub repository, November 2026. Every behavior below has screenshots from that test: open the **Screenshots** sections. Instance names, other projects, user names and tokens are masked.
+**Lab-proven on:** Oracle Integration 3 (26.10), two instances and a private GitHub repository, November 2026. Every behavior below has screenshots from the hands-on lab: open the **Screenshots** sections. Instance names, other projects, user names and tokens are masked.
+
 **Requirements:** Python 3 (standard library only), a GitHub repository with Actions enabled.
 
 ---
@@ -24,6 +25,7 @@ Production always receives the untouched `.car` file that OIC exported. Git adds
 * [What's inside a .car](#whats-inside-a-car)
 * [Five import behaviors that shape the design](#five-import-behaviors-that-shape-the-design)
 * [How the pipeline works](#how-the-pipeline-works)
+* [What makes it production-ready](#what-makes-it-production-ready)
 * [Try it with the demo exports](#try-it-with-the-demo-exports)
 * [Set it up in your repository](#set-it-up-in-your-repository)
 * [Release runbook](#release-runbook)
@@ -63,9 +65,9 @@ Exports also carry noise: export timestamps, a best-practice scan time, a hash t
 
 Two more details: a deployment identifier can be imported into an instance only once, so every release needs a new identifier; and a deployment carries the lookups its integrations reference. Activating a new minor version deactivates the previous one automatically, which makes rollback a single step: deactivate the new version and reactivate the old one.
 
-I expect connections to behave like lookups (existing connections keep their target configuration), but I didn't test that in this proof of concept.
+I expect connections to behave like lookups (existing connections keep their target configuration), but I didn't test that in the lab.
 
-### Evidence from the proof of concept
+### Lab evidence
 
 Instance A plays DEV and instance B plays PROD. The test project is `XXMRL_DEMO_OIC_PRJ` with two scheduled integrations (INT1, INT2) and two lookups.
 
@@ -76,17 +78,17 @@ Instance A plays DEV and instance B plays PROD. The test project is `XXMRL_DEMO_
 
 The archive carried deployment `HOTFIX_INT1_101`, which already existed in the target:
 
-![Import rejected: matching deployment already present](images/poc/10-import-rejected-deployment-exists.png)
+![Import rejected: matching deployment already present](images/lab/10-import-rejected-deployment-exists.png)
 
 Rejected again with an archive that carried no deployment: the project already exists.
 
-![Import rejected: project already exists](images/poc/11-import-rejected-project-exists.png)
+![Import rejected: project already exists](images/lab/11-import-rejected-project-exists.png)
 
 The same archive imports into an instance without the project (the first install), and every integration lands as Configured:
 
-![First install: import into instance B](images/poc/12-first-install-import.png)
-![First install: Imported project](images/poc/13-first-install-imported.png)
-![First install: everything Configured](images/poc/14-first-install-configured.png)
+![First install: import into instance B](images/lab/12-first-install-import.png)
+![First install: Imported project](images/lab/13-first-install-imported.png)
+![First install: everything Configured](images/lab/14-first-install-configured.png)
 
 </details>
 
@@ -97,30 +99,30 @@ The same archive imports into an instance without the project (the first install
 
 **Before the release.** Production holds a PROD-only lookup value, `Value1-PROD`:
 
-![PROD-only lookup value](images/poc/15-prod-only-lookup-value.png)
+![PROD-only lookup value](images/lab/15-prod-only-lookup-value.png)
 
 In DEV, INT1 1.0.1 is edited **in place** (the incorrect change) and the existing lookup gets a new row:
 
-![DEV: INT1 1.0.1 edited in place](images/poc/16-dev-same-version-edit.png)
-![DEV: new lookup row ID5](images/poc/17-dev-lookup-new-row.png)
+![DEV: INT1 1.0.1 edited in place](images/lab/16-dev-same-version-edit.png)
+![DEV: new lookup row ID5](images/lab/17-dev-lookup-new-row.png)
 
 Deployment REL_R1 holds INT1 1.0.1 (same version, changed) and INT2 1.0.1 (new):
 
-![Deployment REL_R1](images/poc/18-rel-r1-deployment.png)
+![Deployment REL_R1](images/lab/18-rel-r1-deployment.png)
 
 **The import.** OIC reports success:
 
-![Importing REL_R1 into the existing project](images/poc/19-import-rel-r1.png)
-![Imported project](images/poc/20-rel-r1-imported-success.png)
+![Importing REL_R1 into the existing project](images/lab/19-import-rel-r1.png)
+![Imported project](images/lab/20-rel-r1-imported-success.png)
 
 **After the release.** INT2 1.0.1 and the new lookup arrived, Configured. INT1 1.0.1 kept its old content (the post-import check proves it, see the [release guard summary](#how-the-pipeline-works)). The existing lookup kept `Value1-PROD`, and DEV's new row was not added:
 
-![After REL_R1](images/poc/21-after-rel-r1.png)
-![Existing lookup kept its PROD value](images/poc/22-lookup-kept-prod-value.png)
+![After REL_R1](images/lab/21-after-rel-r1.png)
+![Existing lookup kept its PROD value](images/lab/22-lookup-kept-prod-value.png)
 
 A production run of INT2 1.0.1 logs `Value1-PROD | NewValue1`: the PROD value was kept and the missing lookup was created.
 
-![PROD run log](images/poc/23-prod-run-log.png)
+![PROD run log](images/lab/23-prod-run-log.png)
 
 </details>
 
@@ -129,7 +131,7 @@ A production run of INT2 1.0.1 logs `Value1-PROD | NewValue1`: the PROD value wa
 
 <br>
 
-![Activating 1.0.1 deactivated 1.0.0](images/poc/24-activation-deactivates-previous.png)
+![Activating 1.0.1 deactivated 1.0.0](images/lab/24-activation-deactivates-previous.png)
 
 </details>
 
@@ -154,7 +156,7 @@ The three workflows:
 | `release-guard.yml` | Pull request into `main` | Runs the tool self-test, then checks each release archive against `prod-state/` on the base branch; fails the pull request on a blocking finding |
 | `verify-prod.yml` | Push to `main` that changes `prod-state/`, or manual run | Checks that every release archive on `main` landed in production as released |
 
-![Release guard summary from the proof of concept](images/04-release-guard.png)
+![Release guard summary from the hands-on lab](images/04-release-guard.png)
 
 <details>
 <summary><b>Screenshots: the workflows running on GitHub</b> (3 screenshots)</summary>
@@ -163,21 +165,36 @@ The three workflows:
 
 The `oic-dev` branch after a push: OIC's "API client checkin" commits, followed by the Expand workflow's commit naming the project:
 
-![Expand commit on oic-dev](images/poc/25-expand-commit.png)
+![Expand commit on oic-dev](images/lab/25-expand-commit.png)
 
 A pull request into `main` with the Release guard check passing:
 
-![Release guard check passing](images/poc/26-guard-check-passing.png)
+![Release guard check passing](images/lab/26-guard-check-passing.png)
 
 Verify PROD after the production baseline is merged (no release archives on `main` yet):
 
-![Verify PROD on the baseline](images/poc/27-verify-prod-baseline.png)
+![Verify PROD on the baseline](images/lab/27-verify-prod-baseline.png)
 
 </details>
 
+## What makes it production-ready
+
+| Property | How the blueprint delivers it |
+|---|---|
+| **Guarded releases** | Every release pull request is checked against the latest production export. A blocking finding fails the pull request before anything is imported. |
+| **Proof that the release landed** | After each import, Verify PROD confirms every released integration version is in production with exactly the released content. It catches OIC's silent skip, which the import screen reports as success. |
+| **No rebuilt artifacts** | Production always receives the untouched `.car` file OIC exported. Git is a readable mirror and a set of checks; nothing is rebuilt from it. |
+| **A self-testing pipeline** | The guard runs its regression tests on real exports from the lab (identifiers replaced) before every check, so a broken tool can't pass a release. |
+| **Simple rollback** | Every change is a new integration version, so rollback is one step: deactivate the new version and reactivate the previous one. |
+| **Least-privilege access** | OIC uses a fine-grained token limited to one repository with Contents access only; the workflows need nothing beyond the repository's own `GITHUB_TOKEN`. |
+| **Clear ownership** | The one manual step (committing the production export) has a named owner on the release checklist. |
+| **No dependencies** | Python standard library only, on any GitHub-hosted runner. Nothing to install, patch or license. |
+
+**Before you rely on it in production,** add what the lab didn't cover: branch protection on `main` (required approval and a passing Release guard check), the repository connected to the DEV instance only, client repositories in the client's own GitHub organization, a test of connection behavior on import, and a rerun of the tests against your own exports after each Oracle Integration upgrade.
+
 ## Try it with the demo exports
 
-The `tests/fixtures` folder holds exports from the proof of concept with identifiers replaced (email address and OCIDs). They include the release whose same-version change OIC silently skipped.
+The `tests/fixtures` folder holds exports from the hands-on lab with identifiers replaced (email address and OCIDs). They include the release whose same-version change OIC silently skipped.
 
 ```text
 cd guides/oic-cicd
@@ -231,29 +248,29 @@ The second shows what happened when that release was imported anyway: OIC report
 
 The fine-grained token: one repository, Contents read and write:
 
-![GitHub fine-grained token](images/poc/02-github-fine-grained-token.png)
+![GitHub fine-grained token](images/lab/02-github-fine-grained-token.png)
 
 Settings > Repository before and after the connection (token masked):
 
-![Settings > Repository, empty](images/poc/01-repository-settings-empty.png)
-![Repository connection established](images/poc/03-repository-connected.png)
+![Settings > Repository, empty](images/lab/01-repository-settings-empty.png)
+![Repository connection established](images/lab/03-repository-connected.png)
 
 Export to Repository, and the push on GitHub:
 
-![Export to Repository succeeded](images/poc/04-export-to-repository.png)
-![Recent pushes from OIC on oic-dev](images/poc/05-repository-oic-dev-pushes.png)
+![Export to Repository succeeded](images/lab/04-export-to-repository.png)
+![Recent pushes from OIC on oic-dev](images/lab/05-repository-oic-dev-pushes.png)
 
 Without the Expand workflow, this is all Git sees: one binary archive.
 
-![The .car as a binary file in Git](images/poc/06-car-binary-in-git.png)
+![The .car as a binary file in Git](images/lab/06-car-binary-in-git.png)
 
 When you export a project, the Project deployment field is optional. Blank means a full project archive (first install and production state); a deployment means a release archive.
 
-![Export project: Project deployment is optional](images/poc/09-export-project-deployment-optional.png)
+![Export project: Project deployment is optional](images/lab/09-export-project-deployment-optional.png)
 
 </details>
 
-Recommended, not tested in the proof of concept: protect `main` so a pull request needs an approval and a passing **Release guard** check before it merges; connect only the DEV instance to the repository; and keep client repositories in the client's own GitHub organization.
+Recommended for production, not covered by the lab: protect `main` so a pull request needs an approval and a passing **Release guard** check before it merges; connect only the DEV instance to the repository; and keep client repositories in the client's own GitHub organization.
 
 ## Release runbook
 
@@ -277,27 +294,27 @@ Recommended, not tested in the proof of concept: protect `main` so a pull reques
 
 **Step 1.** The fix done properly: INT1 1.0.2, a new version.
 
-![DEV: INT1 1.0.2](images/poc/28-dev-new-version-1-0-2.png)
+![DEV: INT1 1.0.2](images/lab/28-dev-new-version-1-0-2.png)
 
 **Step 2.** Create the deployment, choose only the versions to release, and push it.
 
-![Create deployment](images/poc/07-create-deployment.png)
-![Choose integrations](images/poc/08-choose-integrations.png)
-![REL_R2 pushed to the repository](images/poc/29-rel-r2-pushed.png)
+![Create deployment](images/lab/07-create-deployment.png)
+![Choose integrations](images/lab/08-choose-integrations.png)
+![REL_R2 pushed to the repository](images/lab/29-rel-r2-pushed.png)
 
 **Step 3.** The release pull request, with the Release guard passing.
 
-![Release pull request for REL_R2](images/poc/30-rel-r2-pull-request.png)
+![Release pull request for REL_R2](images/lab/30-rel-r2-pull-request.png)
 
 **Step 4.** Import into production: INT1 1.0.2 is added, Configured.
 
-![REL_R2 imported](images/poc/31-rel-r2-imported.png)
-![After REL_R2](images/poc/32-after-rel-r2.png)
+![REL_R2 imported](images/lab/31-rel-r2-imported.png)
+![After REL_R2](images/lab/32-after-rel-r2.png)
 
 **Step 5.** Commit the production export, and Verify PROD confirms REL_R2 landed: the deployment is present and INT1 01.00.0002 content matches. The WARN reminds you it is not active yet (step 6).
 
-![Pull request with the production state](images/poc/33-prod-state-pull-request.png)
-![Verify PROD confirms REL_R2](images/poc/34-verify-prod-rel-r2.png)
+![Pull request with the production state](images/lab/33-prod-state-pull-request.png)
+![Verify PROD confirms REL_R2](images/lab/34-verify-prod-rel-r2.png)
 
 </details>
 
@@ -348,6 +365,7 @@ When `GITHUB_STEP_SUMMARY` is set, findings are also written to the job summary.
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | November 2026 | First public version: tools, workflows, demo exports and setup guide. |
+| 1.1 | November 2026 | Framed as a production-ready blueprint: "What makes it production-ready" section, 34 lab screenshots, newsletter links. |
 
 ---
 

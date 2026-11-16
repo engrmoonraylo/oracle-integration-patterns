@@ -1,4 +1,4 @@
-"""Regression tests built from real exports captured during the OIC CI/CD POC.
+"""Regression tests built from real exports captured in a hands-on lab on two Oracle Integration 3 instances.
 
 Rev 1.0  2026-11-15  Initial version.
 

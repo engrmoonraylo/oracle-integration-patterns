@@ -1,6 +1,6 @@
 """OIC CI/CD checks for Oracle Integration 3 project archives.
 
-Rev 1.0  2026-11-15  Initial version, rules proven in the OIC CI/CD POC.
+Rev 1.0  2026-11-15  Initial version, rules proven in a hands-on lab on Oracle Integration 3.
 
 Commands
   expand  <car> <out_dir>                 write the normalized review tree

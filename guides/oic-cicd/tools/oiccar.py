@@ -1,6 +1,6 @@
 """Read and normalize Oracle Integration 3 project archives (.car).
 
-Rev 1.0  2026-11-15  Initial version, rules proven in the OIC CI/CD POC.
+Rev 1.0  2026-11-15  Initial version, rules proven in a hands-on lab on Oracle Integration 3.
 
 The .car is never modified. Normalization only feeds review (expanded tree)
 and comparison (fingerprints). Standard library only, so it runs on any
