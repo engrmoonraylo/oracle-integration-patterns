@@ -1,6 +1,6 @@
-# Oracle Integration CI/CD: Integration-Level Git for OIC 3 Projects
+# Oracle Integration CI/CD Blueprint: Integration-Level Git for OIC 3 Projects
 
-![Oracle Integration CI/CD: integration-level Git for OIC 3 projects](images/oic-cicd-banner.png)
+![Oracle Integration CI/CD Blueprint: integration-level Git for OIC 3 projects](images/oic-cicd-banner.png)
 
 > **Companion to Edition #5 of the [Real-World Oracle Integration](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) newsletter on LinkedIn.** [Read the article](https://www.linkedin.com/pulse/oracle-integration-cicd-integration-level-git-oic-3-lo-psm-ii-4c20e/), [subscribe](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition, or [connect with me](https://www.linkedin.com/in/moonraylo).
 
