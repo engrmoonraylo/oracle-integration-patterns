@@ -2,7 +2,7 @@
 
 ![Oracle Integration CI/CD: integration-level Git for OIC 3 projects](images/oic-cicd-banner.png)
 
-> **Companion to Edition #5 of the [Real-World Oracle Integration](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) newsletter on LinkedIn.** [Subscribe](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition, or [connect with me](https://www.linkedin.com/in/moonraylo).
+> **Companion to Edition #5 of the [Real-World Oracle Integration](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) newsletter on LinkedIn.** [Read the article](https://www.linkedin.com/pulse/oracle-integration-cicd-integration-level-git-oic-3-lo-psm-ii-4c20e/), [subscribe](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384) for the next edition, or [connect with me](https://www.linkedin.com/in/moonraylo).
 
 Oracle Integration 3 can push a project or a project deployment to GitHub in one click, but each lands as a single `.car` archive. Git can tell you the file changed. It can't tell you which integration changed, who changed it, or whether production received exactly that change.
 
@@ -371,7 +371,7 @@ When `GITHUB_STEP_SUMMARY` is set, findings are also written to the job summary.
 
 ## Follow the newsletter
 
-This guide is the hands-on companion to **Edition #5 of Real-World Oracle Integration**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
+This guide is the hands-on companion to **[Edition #5 of Real-World Oracle Integration](https://www.linkedin.com/pulse/oracle-integration-cicd-integration-level-git-oic-3-lo-psm-ii-4c20e/)**, my LinkedIn newsletter: production-tested Oracle Integration patterns, one edition at a time. Subscribe for the next edition, and connect with me if you want to compare notes on your own setup.
 
 [![Subscribe to the Real-World Oracle Integration newsletter on LinkedIn](../../assets/newsletter-banner.png)](https://www.linkedin.com/newsletters/real-world-oracle-integration-7513260462159888384)
 
