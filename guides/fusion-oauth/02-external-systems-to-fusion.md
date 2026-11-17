@@ -75,6 +75,8 @@ What changes for the system:
 
 - Create one Fusion user per system, for example `<ORG>_<SYSTEM>_INTUSER`, with only the roles its APIs need.
 - Don't reuse an OIC integration user or a person's account.
+- In the Fusion identity domain, open **User management** and confirm the user is listed. Fusion synchronizes its users to this domain automatically.
+- Record the username exactly as it appears, including case. It becomes the user assertion's `sub`.
 - No roles are added for OAuth.
 - Keep the password until cutover is proven, then rotate it to an unrecorded value or remove password sign-in according to your security policy.
 
@@ -88,6 +90,7 @@ openssl req -x509 -newkey rsa:2048 -sha256 -days 365 -nodes \
 openssl x509 -in <ALIAS>.cer -noout -subject -enddate -fingerprint -sha256
 ```
 
+- On Windows Git Bash, start the first command with `MSYS_NO_PATHCONV=1` (or write the subject as `"//CN=<ALIAS>"`). Otherwise Git Bash turns `/CN=...` into a Windows path and OpenSSL rejects the subject.
 - Alias pattern: `<ORG>_<SYSTEM>_FusionJWT_<ENV>_CERT`. The same value is the identity domain certificate alias and the JWT `kid`.
 - Use separate key pairs for non-production and production.
 - Record the certificate expiry in the caller register with a renewal alert 30 days before. Validity is your security team's call; I keep it to 12 months.
@@ -109,9 +112,14 @@ Work in the Fusion environment's identity domain, with the console region set to
 2. **Edit OAuth configuration > Configure this application as a client now.** Under **Authorization**, select **JWT assertion** only.
 3. **Client type: Trusted**, with **Import certificate** using the same certificate and alias.
 4. **Client IP address**: restrict to the system's egress IP ranges when you know them, otherwise **Anywhere**. The form won't save with neither selected.
-5. **Token issuance policy**: **Specific**, **Add resources**, **Add scope**, select the Fusion resource (**Oracle Applications Cloud (Fusion)** or **Fusion Applications Cloud Service**, depending on the domain).
-6. **Submit**, then **Actions > Activate**.
-7. Send the system owner the **client ID**, the **scope** and the **token URL** (`https://<fusion-domain-host>/oauth2/v1/token`). The generated client secret isn't used.
+5. **Token issuance policy**: **Specific**, **Add resources**, **Add scope**, select the Fusion resource (**Oracle Applications Cloud (Fusion)** or **Fusion Applications Cloud Service**, depending on the domain), then **Add**. If neither is offered, see [Guide 1, Step 5.2](01-oic-connections-to-fusion.md#52-create-the-confidential-application).
+6. **Submit**, then **Actions > Activate > Activate application**.
+7. Send the system owner:
+   - the **client ID** (on the application's OAuth configuration);
+   - the **scope**, copied from the console (see [Three facts to establish first](README.md#three-facts-to-establish-first)), never typed;
+   - the **token URL**: the **Domain URL** from the domain's **Details** page, plus `/oauth2/v1/token`, for example `https://idcs-<id>.identity.oraclecloud.com/oauth2/v1/token`. Leave out the `:443` if the console shows it.
+
+   The page also shows a client secret. JWT User Assertion never uses it, so don't copy or send it.
 
 ![Confidential application for an external system](images/external/02-confidential-app.png)
 
@@ -123,28 +131,58 @@ If the system calls BI Publisher SOAP services (for example `ExternalReportWSSSe
 
 ### 5.1 The two assertions
 
+**Oracle doesn't issue the assertions. The calling system builds them itself.** Each one is a short JWT that the system signs with the private key from Step 3. The identity domain checks the signature against the certificate imported in Step 4, then returns the access token. The system builds a fresh pair each time it needs a new token.
+
 | Part | User assertion | Client assertion |
 |---|---|---|
 | Header | `alg` RS256, `typ` JWT, `kid` = certificate alias | Same |
 | `iss` | Client ID | Client ID |
-| `sub` | The system's Fusion integration user | Client ID |
+| `sub` | The system's Fusion integration user, exactly as in Step 2 | Client ID |
 | `aud` | `https://identity.oraclecloud.com/` (with the trailing slash) | Same |
 | `iat`, `exp` | Now, and now + up to 30 minutes | Same |
 | `jti` | Unique value per assertion | Unique value per assertion |
 
 ### 5.2 Token request
 
+First, sign the two assertions into `$USER_ASSERTION` and `$CLIENT_ASSERTION` with [`scripts/sign_assertions.sh`](scripts/sign_assertions.sh). Run it in Bash (Linux, macOS, OCI Cloud Shell or Windows Git Bash) where the private key is held, from this guide's folder (`guides/fusion-oauth`):
+
 ```bash
-curl -s -X POST "https://<fusion-domain-host>/oauth2/v1/token" \
+export ALIAS='<certificate alias>'           # the kid, from Step 3
+export CLIENT_ID='<client ID>'               # from Step 4.2
+export FUSION_USER='<integration user>'      # from Step 2; becomes the user assertion's sub
+export KEY='<ALIAS>_private_key.pem'         # path to the private key from Step 3
+eval "$(bash scripts/sign_assertions.sh)"    # sets USER_ASSERTION and CLIENT_ASSERTION
+```
+
+- `eval` matters. The script prints two `export` lines, and running it on its own only prints them; the variables stay empty.
+- The script also prints a summary line (`Signed for sub=..., iss=..., kid=...`) so you can check the values before using them. It never prints the assertions themselves.
+- If the key file can't be read or signing fails, the script stops with an error and sets nothing.
+- The assertions are valid for 30 minutes. If the token request fails with `invalid_grant` after a break, run the `eval` line again.
+
+Then request the token in the same shell, and call a read-only Fusion REST resource with it:
+
+```bash
+TOKEN_URL='https://<domain URL>/oauth2/v1/token'   # from Step 4.2
+SCOPE='<Fusion scope>'                             # from Step 4.2, copied
+FUSION='https://<fusion-host>'                     # the Fusion host from its sign-in URL
+
+RESP=$(curl -s -X POST "$TOKEN_URL" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer" \
   --data-urlencode "assertion=$USER_ASSERTION" \
   --data-urlencode "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer" \
   --data-urlencode "client_assertion=$CLIENT_ASSERTION" \
-  --data-urlencode "scope=<Fusion scope>"
+  --data-urlencode "scope=$SCOPE")
+TOKEN=$(printf '%s' "$RESP" | sed -n 's/.*"access_token" *: *"\([^"]*\)".*/\1/p')
+if [ -n "$TOKEN" ]; then echo "Token OK"; else echo "Token request failed: $RESP"; fi
+
+curl -s -o /dev/null -w "Fusion GET: %{http_code}\n" -H "Authorization: Bearer $TOKEN" \
+  "$FUSION/hcmRestApi/resources/latest/workers?limit=1&onlyData=true&fields=PersonNumber"
 ```
 
-The response holds `access_token`. Call Fusion with `Authorization: Bearer <access_token>`.
+- **Pass:** `Token OK`, then `Fusion GET: 200`. Use any read-only resource the integration user is allowed to call; the `workers` example needs an HCM role.
+- **Fail:** the token response shows `error` and `error_description` (no secrets), which point you to a row in [Troubleshooting](#troubleshooting).
+- The response also has `expires_in`, the seconds the token has left. It follows the user assertion's `exp`, so it's under 1,800 seconds.
 
 ### 5.3 Python
 
@@ -153,7 +191,7 @@ import time, uuid, jwt, requests          # pip install pyjwt cryptography reque
 CLIENT_ID, ALIAS, USER = "<client id>", "<alias>", "<integration user>"
 TOKEN_URL = "https://<fusion-domain-host>/oauth2/v1/token"
 SCOPE = "<Fusion scope>"
-key = open("private_key.pem").read()      # load from the system's vault in production
+key = open(f"{ALIAS}_private_key.pem").read()   # from Step 3; load from the system's vault in production
 
 def assertion(sub, lifetime=1800):
     now = int(time.time())
@@ -173,7 +211,7 @@ token = r.json()["access_token"]
 
 ### 5.4 Bash and OpenSSL only
 
-For systems without a JWT library, [`scripts/sign_assertions.sh`](scripts/sign_assertions.sh) builds both assertions with OpenSSL. Java, .NET and PowerShell follow the same pattern with their standard JWT libraries: two RS256 tokens with the claims in 5.1, then the form post in 5.2.
+For systems without a JWT library, [`scripts/sign_assertions.sh`](scripts/sign_assertions.sh) builds both assertions with OpenSSL, as shown in 5.2. A scheduled job can call it the same way before each token request. Java, .NET and PowerShell follow the same pattern with their standard JWT libraries: two RS256 tokens with the claims in 5.1, then the form post in 5.2.
 
 ### 5.5 Middleware notes
 
@@ -192,11 +230,36 @@ For systems without a JWT library, [`scripts/sign_assertions.sh`](scripts/sign_a
 
 Postman acts as the system by sending exactly what the system would send. It can't sign RS256 assertions on its own, so sign them outside Postman (Step 5.3 or 5.4) with the **non-production** key, and paste them into Postman **secret** environment variables.
 
+To get the values, run the script without `eval`: `bash scripts/sign_assertions.sh`. Copy the text between the quotes on the `USER_ASSERTION` line into `user_assertion`, and the `CLIENT_ASSERTION` line into `client_assertion`. With Python, `print(assertion(USER))` and `print(assertion(CLIENT_ID))` from 5.3 give the same values. Sign a new pair when 30 minutes have passed.
+
+Create a Postman environment with these variables: `token_url`, `scope` and `fusion_host` (the values from 5.2), plus `user_assertion` and `client_assertion` as type **secret**. Then build three requests:
+
 | Request | Settings |
 |---|---|
-| 1. Token | `POST <token URL>`; Authorization **No Auth**; Body x-www-form-urlencoded: `grant_type`, `assertion` = `{{user_assertion}}`, `client_assertion_type`, `client_assertion` = `{{client_assertion}}`, `scope`. Post-response script: `pm.environment.set("fusion_token", pm.response.json().access_token)` |
-| 2. REST call | `GET` a REST resource the user can read, Authorization **Bearer Token** `{{fusion_token}}`; expect 200 |
-| 3. SOAP call | `POST` a SOAP service the user can call, Bearer `{{fusion_token}}`, `Content-Type: text/xml`; expect 200 and a valid response |
+| 1. Token | `POST {{token_url}}`; Authorization **No Auth**; Body **x-www-form-urlencoded** with `grant_type` = `urn:ietf:params:oauth:grant-type:jwt-bearer`, `assertion` = `{{user_assertion}}`, `client_assertion_type` = `urn:ietf:params:oauth:client-assertion-type:jwt-bearer`, `client_assertion` = `{{client_assertion}}`, `scope` = `{{scope}}`. **Scripts > Post-response**: `pm.environment.set("fusion_token", pm.response.json().access_token);` Expect 200 with `access_token`, `token_type` Bearer and `expires_in`. |
+| 2. REST call | `GET {{fusion_host}}/hcmRestApi/resources/latest/workers?limit=1&onlyData=true&fields=PersonNumber` (or another resource the user can read); Authorization **Bearer Token** `{{fusion_token}}`. Expect 200. |
+| 3. SOAP call | `POST {{fusion_host}}/xmlpserver/services/ExternalReportWSSService`; Authorization **Bearer Token** `{{fusion_token}}`; header `Content-Type: application/soap+xml; charset=utf-8`; Body **raw** with the envelope below. Expect 200 and `reportBytes` holding data. |
+
+The SOAP body for request 3 uses the SOAP 1.2 envelope and has an empty `soap:Header`, with no WS-Security. Point `reportAbsolutePath` at a report the integration user can run:
+
+```xml
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:pub="http://xmlns.oracle.com/oxp/service/PublicReportService">
+  <soap:Header/>
+  <soap:Body>
+    <pub:runReport>
+      <pub:reportRequest>
+        <pub:attributeFormat>csv</pub:attributeFormat>
+        <pub:reportAbsolutePath>/Custom/<folder>/<report name>.xdo</pub:reportAbsolutePath>
+        <pub:sizeOfDataChunkDownload>-1</pub:sizeOfDataChunkDownload>
+      </pub:reportRequest>
+      <pub:appParams></pub:appParams>
+    </pub:runReport>
+  </soap:Body>
+</soap:Envelope>
+```
+
+`reportBytes` comes back Base64-encoded. Decode it to check that it holds real rows, not just headers.
 
 ![Postman token request](images/external/03-postman-token.png)
 
@@ -236,6 +299,8 @@ Use Authorization Code only when the system can't create or protect a signing ke
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Token returned, but Fusion rejects every call | Client Credentials grant used against a Fusion Applications API | Switch to JWT User Assertion; Client Credentials works only for `/api/...` Spectra services |
+| Token request fails and `echo ${#USER_ASSERTION}` prints `0` | `$USER_ASSERTION` never set: the script ran without `eval`, or in another shell | Run `eval "$(bash scripts/sign_assertions.sh)"` in the same shell as the token request (5.2) |
+| Script stops with `Cannot read private key file` or `Signing failed` | `KEY` points to the wrong path, or to the certificate instead of the private key | Set `KEY` to the `_private_key.pem` file from Step 3 |
 | `invalid_grant` | Assertion expired, clock skew, or wrong `sub`, `kid` or `aud` | Check the clock and claims; `sub` must be an active Fusion user |
 | `invalid_client` | Client assertion missing or wrong, or certificate not trusted on the app | Send `client_assertion`; check the app's certificate and alias |
 | `invalid_scope` | The two scope parts split by a space, or the wrong pod | Copy the scope from the token issuance policy |

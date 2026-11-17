@@ -89,6 +89,8 @@ Oracle also documents a BI administrator property, **Enable OAuth for SOAP Webse
 ## Oracle sources
 
 - Configure OAuth to Access Oracle Fusion Cloud Applications REST APIs (26D): https://docs.oracle.com/en/cloud/saas/applications-common/26d/farca/configure_oauth.html
+- Identity domains: Client/User JWT Assertion requirements: https://docs.oracle.com/en-us/iaas/Content/Identity/api-getstarted/ClientAssertion.htm
+- Obtaining an Access Token by Using a Self-Signed User Assertion and a Client Assertion (token expiry follows the user assertion's `exp`): https://docs.oracle.com/en/cloud/get-started/subscriptions-cloud/csimg/obtaining-access-token-using-self-signed-user-assertion-and-client-assertion.html
 - Oracle Analytics Publisher: Authenticating Web Services: https://docs.oracle.com/en/cloud/saas/otbi/otbi-pub-dev/authenticating-web-services.html
 - Oracle Analytics Publisher: Enable OAuth for SOAP Web Services: https://docs.oracle.com/en/cloud/saas/otbi/otbi-pub-dev/enable-oauth-soap-webservices.html
 - SOAP Adapter: Invoke a Web Service with a JWT Assertion: https://docs.oracle.com/en/cloud/paas/application-integration/soap-adapter/invoke-service-api-jwt-assertion.html

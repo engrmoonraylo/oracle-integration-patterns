@@ -162,7 +162,7 @@ head -1 ${ALIAS}_private_key.pem
 
 | Tool | Notes |
 |---|---|
-| OpenSSL on a workstation | Git Bash on Windows, or macOS, Linux and WSL. Same command as Cloud Shell. |
+| OpenSSL on a workstation | Git Bash on Windows, or macOS, Linux and WSL. Same command as Cloud Shell. In Git Bash, start the `openssl req` line with `MSYS_NO_PATHCONV=1`, or Git Bash turns `/CN=...` into a Windows path and OpenSSL rejects the subject. |
 | PowerShell 7.4 or later | .NET can create the key and certificate without touching the Windows certificate store. Not available in Windows PowerShell 5.1. |
 | KeyStore Explorer | Free GUI (needs Java). Generate RSA 2048, SHA-256, 365 days, alias as CN, then export the private key as PKCS#8 PEM and the certificate as PEM. |
 
